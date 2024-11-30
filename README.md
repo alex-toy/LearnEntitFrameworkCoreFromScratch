@@ -1,1 +1,1 @@
-# LearnEntitFrameworkCoreFromScratch
+# Learn Entity Framework Core From Scratch
