@@ -1,10 +1,15 @@
-﻿namespace ConsoleApp
+﻿using Data;
+using Domain;
+
+namespace ConsoleApp;
+
+internal class Program
 {
-    internal class Program
+    private static readonly LeagueDbContext _db = new LeagueDbContext();
+
+    static async Task Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello, World!");
-        }
+        await _db.Leagues.AddAsync(new League() { Name = "english premiere league" });
+        await _db.SaveChangesAsync();
     }
 }
