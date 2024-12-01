@@ -6,4 +6,5 @@ public class Team
     public string Name { get; set; }
     public int LeagueId { get; set; }
     public virtual League League{ get; set;}
+    public virtual ICollection<Match> Matches{ get; set; }
 }

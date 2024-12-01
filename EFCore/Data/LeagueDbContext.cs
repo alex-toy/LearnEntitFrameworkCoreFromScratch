@@ -14,4 +14,19 @@ public class LeagueDbContext : DbContext
     public DbSet<Team> Teams { get; set; }
     public DbSet<League> Leagues { get; set; }
     public DbSet<Match> Matches { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Match>()
+            .HasOne(e => e.Team1)
+            .WithMany(s => s.Matches)
+            .HasForeignKey(e => e.Team1Id)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Match>()
+            .HasOne(e => e.Team2)
+            .WithMany()
+            .HasForeignKey(e => e.Team2Id)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
 }

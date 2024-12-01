@@ -12,7 +12,8 @@ internal class Program
     {
         //await AddLeague();
         //await AddTeams();
-        await DisplayTeams();
+        //await DisplayTeams();
+        await AddMatch();
     }
 
     private static async Task AddLeague()
@@ -42,5 +43,18 @@ internal class Program
                                         .Where(t => t.League.Name.StartsWith("french"));
 
         foreach (var team in teams) await Console.Out.WriteLineAsync($"{team.Id} - {team.Name} - League : {team.League.Name}");
+    }
+
+    private static async Task AddMatch()
+    {
+        //await _db.Matches.AddAsync(new Match() { Team1Id = 6, Team2Id = 7, Score = "2-1" });
+        //await _db.Matches.AddAsync(new Match() { Team1Id = 7, Team2Id = 8, Score = "3-2" });
+        await _db.Matches.AddAsync(new Match() { Team1Id = 6, Team2Id = 7, Score = "6-2" });
+
+        Team? team1 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 6);
+        Team? team2 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 7);
+        await _db.Matches.AddAsync(new Match() { Team1 = team1!, Team2 = team2!, Score = "6-2" });
+
+        await _db.SaveChangesAsync();
     }
 }
