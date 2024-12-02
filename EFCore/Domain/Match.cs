@@ -10,4 +10,5 @@ public class Match
     public Team Team2 { get; set; }
 
     public string Score { get; set; }
+    public DateTime PlayedAt { get; set; }
 }

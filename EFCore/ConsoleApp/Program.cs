@@ -12,8 +12,9 @@ internal class Program
     {
         //await AddLeague();
         //await AddTeams();
-        //await DisplayTeams();
-        await AddMatch();
+        DisplayTeams();
+        //await AddMatch();
+        //await AddEnrollment();
     }
 
     private static async Task AddLeague()
@@ -36,24 +37,45 @@ internal class Program
         await _db.SaveChangesAsync();
     }
 
-    private static async Task DisplayTeams()
+    private static void DisplayTeams()
     {
         IQueryable<Team> teams = _db.Teams.AsQueryable()
                                         .Include(t => t.League)
-                                        .Where(t => t.League.Name.StartsWith("french"));
+                                        .Include(t => t.Matches).ThenInclude(m => m.Team2)
+                                        .Include(t => t.Enrollments).ThenInclude(m => m.Player);
 
-        foreach (var team in teams) await Console.Out.WriteLineAsync($"{team.Id} - {team.Name} - League : {team.League.Name}");
+        foreach (var team in teams) team.Display();
     }
 
     private static async Task AddMatch()
     {
         //await _db.Matches.AddAsync(new Match() { Team1Id = 6, Team2Id = 7, Score = "2-1" });
         //await _db.Matches.AddAsync(new Match() { Team1Id = 7, Team2Id = 8, Score = "3-2" });
-        await _db.Matches.AddAsync(new Match() { Team1Id = 6, Team2Id = 7, Score = "6-2" });
+        //await _db.Matches.AddAsync(new Match() { Team1Id = 6, Team2Id = 7, Score = "6-2" });
 
-        Team? team1 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 6);
-        Team? team2 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 7);
-        await _db.Matches.AddAsync(new Match() { Team1 = team1!, Team2 = team2!, Score = "6-2" });
+        //Team? team1 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 6);
+        //Team? team2 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 7);
+
+        await _db.Matches.AddAsync(new Match()
+        {
+            Team1 = new Team() { Name = "Ol", League = new League() { Name = "D1" } },
+            Team2 = new Team() { Name = "PSG", League = new League() { Name = "D3" } },
+            Score = "10-2"
+        });
+
+        await _db.SaveChangesAsync();
+    }
+
+    private static async Task AddEnrollment()
+    {
+        Team? team = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 7);
+
+        await _db.Enrollments.AddAsync(new Enrollment()
+        {
+            Player = new () { Name = "ronaldo" },
+            Team = team!,
+            StartedAt = DateTime.Now
+        });
 
         await _db.SaveChangesAsync();
     }

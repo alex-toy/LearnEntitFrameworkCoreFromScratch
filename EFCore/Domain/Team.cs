@@ -7,4 +7,20 @@ public class Team
     public int LeagueId { get; set; }
     public virtual League League{ get; set;}
     public virtual ICollection<Match> Matches{ get; set; }
+    public virtual ICollection<Enrollment> Enrollments{ get; set; }
+
+    public void Display()
+    {
+        Console.WriteLine($"{Id} - {Name} - League : {League.Name}");
+
+        foreach (var match in Matches)
+        {
+            Console.WriteLine($"{match.Team2.Name} - {match.Score}");
+        }
+
+        foreach (var enrollment in Enrollments)
+        {
+            Console.WriteLine($"{enrollment.Player.Name} - {enrollment.StartedAt} - {enrollment.EndedAt}");
+        }
+    }
 }
