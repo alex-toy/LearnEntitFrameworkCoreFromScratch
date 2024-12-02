@@ -17,6 +17,8 @@ public class LeagueDbContext : DbContext
     public DbSet<Player> Players { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
     public DbSet<Cup> Cups { get; set; }
+    public DbSet<Trainer> Trainers { get; set; }
+    public DbSet<Training> Trainings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

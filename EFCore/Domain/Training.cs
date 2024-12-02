@@ -1,11 +1,11 @@
 ﻿namespace Domain;
 
-public class Enrollment
+public class Training
 {
     public int Id { get; set; }
 
-    public int PlayerId { get; set; }
-    public Player Player { get; set; }
+    public int TrainerId { get; set; }
+    public Trainer Trainer { get; set; }
 
     public int TeamId { get; set; }
     public Team Team { get; set; }

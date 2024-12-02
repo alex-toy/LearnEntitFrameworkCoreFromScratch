@@ -17,6 +17,7 @@ internal class Program
         //await UpdateMatch(); 
         //await AddEnrollment();
         //await AddCups();
+        //await AddTrainings();
     }
 
     private static async Task AddLeague()
@@ -45,6 +46,7 @@ internal class Program
                                         .Include(t => t.League)
                                         .Include(t => t.Cups)
                                         .Include(t => t.Matches).ThenInclude(m => m.Team2)
+                                        .Include(t => t.Trainings).ThenInclude(m => m.Trainer)
                                         .Include(t => t.Enrollments).ThenInclude(m => m.Player);
 
         foreach (var team in teams) team.Display();
@@ -120,6 +122,23 @@ internal class Program
             Name = "Coupe d'Italie",
             WinnerTeam = new Team() { Name = "AS Rome", LeagueId = 15 },
             Year = 2022
+        });
+
+        await _db.SaveChangesAsync();
+    }
+
+    private static async Task AddTrainings()
+    {
+        Team team = await _db.Teams.AsQueryable()
+                                        .Include(t => t.Trainings).ThenInclude(m => m.Trainer)
+                                        .FirstOrDefaultAsync(t => t.Id == 7);
+
+        team!.Trainings.First().Trainer.Name = "Carlo Ancelotti";
+
+
+        team!.Trainings.Add(new Training() { 
+            Trainer = new Trainer() { Name = "Rubbens" },
+            StartedAt = DateTime.Now.AddYears(-3)
         });
 
         await _db.SaveChangesAsync();
