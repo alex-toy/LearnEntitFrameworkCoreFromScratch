@@ -14,7 +14,9 @@ internal class Program
         //await AddTeams();
         DisplayTeams();
         //await AddMatch();
+        //await UpdateMatch(); 
         //await AddEnrollment();
+        //await AddCups();
     }
 
     private static async Task AddLeague()
@@ -41,6 +43,7 @@ internal class Program
     {
         IQueryable<Team> teams = _db.Teams.AsQueryable()
                                         .Include(t => t.League)
+                                        .Include(t => t.Cups)
                                         .Include(t => t.Matches).ThenInclude(m => m.Team2)
                                         .Include(t => t.Enrollments).ThenInclude(m => m.Player);
 
@@ -53,15 +56,35 @@ internal class Program
         //await _db.Matches.AddAsync(new Match() { Team1Id = 7, Team2Id = 8, Score = "3-2" });
         //await _db.Matches.AddAsync(new Match() { Team1Id = 6, Team2Id = 7, Score = "6-2" });
 
-        //Team? team1 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 6);
-        //Team? team2 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 7);
+        Team? team1 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 6);
+        team1!.Name = "OM";
+        Team? team2 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 9);
+        team2!.Name = "OL";
+
+        //await _db.Matches.AddAsync(new Match()
+        //{
+        //    Team1 = new Team() { Name = "Ol", League = new League() { Name = "D1" } },
+        //    Team2 = new Team() { Name = "PSG", League = new League() { Name = "D3" } },
+        //    Score = "10-2"
+        //});
 
         await _db.Matches.AddAsync(new Match()
         {
-            Team1 = new Team() { Name = "Ol", League = new League() { Name = "D1" } },
-            Team2 = new Team() { Name = "PSG", League = new League() { Name = "D3" } },
+            Team1 = team1!,
+            Team2 = team2!,
             Score = "10-2"
         });
+
+        await _db.SaveChangesAsync();
+    }
+
+    private static async Task UpdateMatch()
+    {
+        Match? match = await _db.Matches.AsQueryable().FirstOrDefaultAsync(t => t.Id == 5);
+        match!.PlayedAt = DateTime.UtcNow;
+        Team? team2 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 8);
+        team2!.Name = "Inter";
+        match.Team2 = team2;
 
         await _db.SaveChangesAsync();
     }
@@ -75,6 +98,28 @@ internal class Program
             Player = new () { Name = "ronaldo" },
             Team = team!,
             StartedAt = DateTime.Now
+        });
+
+        await _db.SaveChangesAsync();
+    }
+
+    private static async Task AddCups()
+    {
+        Team? team1 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 6);
+        team1!.Name = "Olympique de Marseille";
+
+        await _db.Cups.AddAsync(new Cup()
+        {
+            Name = "Coupe d'Europe",
+            WinnerTeam = team1!,
+            Year = 2024
+        });
+
+        await _db.Cups.AddAsync(new Cup()
+        {
+            Name = "Coupe d'Italie",
+            WinnerTeam = new Team() { Name = "AS Rome", LeagueId = 15 },
+            Year = 2022
         });
 
         await _db.SaveChangesAsync();

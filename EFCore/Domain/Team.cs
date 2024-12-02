@@ -8,6 +8,7 @@ public class Team
     public virtual League League{ get; set;}
     public virtual ICollection<Match> Matches{ get; set; }
     public virtual ICollection<Enrollment> Enrollments{ get; set; }
+    public virtual ICollection<Cup> Cups{ get; set; }
 
     public void Display()
     {
@@ -21,6 +22,11 @@ public class Team
         foreach (var enrollment in Enrollments)
         {
             Console.WriteLine($"{enrollment.Player.Name} - {enrollment.StartedAt} - {enrollment.EndedAt}");
+        }
+
+        foreach (var cup in Cups)
+        {
+            Console.WriteLine($"{cup.Name} - {cup.Year}");
         }
     }
 }
