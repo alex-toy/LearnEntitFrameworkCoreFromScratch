@@ -12,12 +12,12 @@ internal class Program
     {
         //await AddLeague();
         //await AddTeams();
+        //await AddTrainings();
         DisplayTeams();
         //await AddMatch();
         //await UpdateMatch(); 
         //await AddEnrollment();
         //await AddCups();
-        //await AddTrainings();
     }
 
     private static async Task AddLeague()
@@ -47,7 +47,8 @@ internal class Program
                                         .Include(t => t.Cups)
                                         .Include(t => t.Matches).ThenInclude(m => m.Team2)
                                         .Include(t => t.Trainings).ThenInclude(m => m.Trainer)
-                                        .Include(t => t.Enrollments).ThenInclude(m => m.Player);
+                                        .Include(t => t.Enrollments).ThenInclude(m => m.Player)
+                                        .Where(p => p.Enrollments.Select(e => e.Player.Name).Contains("Ronaldo"));
 
         foreach (var team in teams) team.Display();
     }
@@ -131,13 +132,13 @@ internal class Program
     {
         Team team = await _db.Teams.AsQueryable()
                                         .Include(t => t.Trainings).ThenInclude(m => m.Trainer)
-                                        .FirstOrDefaultAsync(t => t.Id == 7);
+                                        .FirstOrDefaultAsync(t => t.Id == 8);
 
-        team!.Trainings.First().Trainer.Name = "Carlo Ancelotti";
+        //team!.Trainings.First().Trainer.Name = "Carlo Ancelotti";
 
 
         team!.Trainings.Add(new Training() { 
-            Trainer = new Trainer() { Name = "Rubbens" },
+            Trainer = new Trainer() { Name = "Didier Deschamps" },
             StartedAt = DateTime.Now.AddYears(-3)
         });
 
