@@ -13,7 +13,8 @@ internal class Program
         //await AddLeague();
         //await AddTeams();
         //await AddTrainings();
-        DisplayTeams();
+        //DisplayTeams();
+        await DisplayPlayers();
         //await AddMatch();
         //await UpdateMatch(); 
         //await AddEnrollment();
@@ -51,6 +52,19 @@ internal class Program
                                         .Where(p => p.Enrollments.Select(e => e.Player.Name).Contains("Ronaldo"));
 
         foreach (var team in teams) team.Display();
+    }
+
+    private static async Task DisplayPlayers()
+    {
+        //Enrollment? enrollment = await _db.Enrollments.AsQueryable().FirstOrDefaultAsync(t => t.Id == 3);
+        //enrollment!.Team = new Team() { Name = "Bayern", League = new() { Name = "Portuguese premiere league" } };
+        //await _db.SaveChangesAsync();
+
+        IQueryable<Player> players = _db.Players.AsQueryable()
+                                        .Include(p => p.Enrollments).ThenInclude(e => e.Team)
+                                        .Where(p => p.Name == "Ronaldo");
+
+        foreach (var player in players) player.Display();
     }
 
     private static async Task AddMatch()
