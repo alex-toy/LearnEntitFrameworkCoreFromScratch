@@ -22,7 +22,7 @@ public class Team
 
         foreach (var match in Matches)
         {
-            Console.WriteLine($"{match.Team2.Name} - {match.Score}");
+            Console.WriteLine($"{match.AwayTeam.Name} - {match.Score}");
         }
 
         foreach (var enrollment in Enrollments)
@@ -34,6 +34,16 @@ public class Team
         {
             Console.WriteLine($"{cup.Name} - {cup.Year}");
         }
+
+        foreach (var trainings in Trainings)
+        {
+            Console.WriteLine($"{trainings.Trainer.Name} - {trainings.StartedAt}");
+        }
+    }
+
+    public void DisplayTrainer()
+    {
+        Console.WriteLine($"{Id} - {Name}");
 
         foreach (var trainings in Trainings)
         {

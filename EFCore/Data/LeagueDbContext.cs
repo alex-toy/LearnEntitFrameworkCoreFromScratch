@@ -25,15 +25,20 @@ public class LeagueDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Match>()
-            .HasOne(e => e.Team1)
+            .HasOne(e => e.HomeTeam)
             .WithMany(s => s.Matches)
-            .HasForeignKey(e => e.Team1Id)
+            .HasForeignKey(e => e.HomeTeamId)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Match>()
-            .HasOne(e => e.Team2)
+            .HasOne(e => e.AwayTeam)
             .WithMany()
-            .HasForeignKey(e => e.Team2Id)
+            .HasForeignKey(e => e.AwayTeamId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Sponsor>()
+            .HasMany(e => e.Teams)
+            .WithOne(s => s.Sponsor)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

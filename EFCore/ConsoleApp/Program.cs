@@ -14,11 +14,14 @@ internal class Program
         //await AddTeams();
         //await AddTrainings();
         //DisplayTeams();
-        await DisplayPlayers();
+        DisplayTeamsWithCurrentTrainer();
+        //await DisplayPlayers();
         //await AddMatch();
         //await UpdateMatch(); 
         //await AddEnrollment();
         //await AddCups();
+        //await AddSponsorTeam();
+        //await DeleteSponsorTeam();
     }
 
     private static async Task AddLeague()
@@ -28,11 +31,26 @@ internal class Program
         await _db.SaveChangesAsync();
     }
 
+    private static async Task AddSponsorTeam()
+    {
+        Team team = (await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 6))!;
+        team.Sponsor = new() { Name = "pepsi cola" };
+        await _db.SaveChangesAsync();
+    }
+
+    private static async Task DeleteSponsorTeam()
+    {
+        Sponsor sponsor = (await _db.Sponsors.AsQueryable().FirstOrDefaultAsync(t => t.Id == 3))!;
+        _db.Sponsors.Remove(sponsor);
+        await _db.SaveChangesAsync();
+    }
+
     private static async Task AddTeams()
     {
         List<Team> leagues = new()
         {
-            new Team() { Name = "team 1", LeagueId = 11 },
+            //new Team() { Name = "Guingand" },
+            new Team() { Name = "Guingand", LeagueId = 11 },
             new Team() { Name = "team 2", LeagueId = 12 },
             new Team() { Name = "team 3", League = new League() { Name = "french permiere league" } },
         };
@@ -46,12 +64,21 @@ internal class Program
         IQueryable<Team> teams = _db.Teams.AsQueryable()
                                         .Include(t => t.League)
                                         .Include(t => t.Cups)
-                                        .Include(t => t.Matches).ThenInclude(m => m.Team2)
+                                        .Include(t => t.Matches).ThenInclude(m => m.AwayTeam)
                                         .Include(t => t.Trainings).ThenInclude(m => m.Trainer)
                                         .Include(t => t.Enrollments).ThenInclude(m => m.Player)
                                         .Where(p => p.Enrollments.Select(e => e.Player.Name).Contains("Ronaldo"));
 
         foreach (var team in teams) team.Display();
+    }
+
+    private static void DisplayTeamsWithCurrentTrainer()
+    {
+        IQueryable<Team> teams = _db.Teams.AsQueryable()
+                                        .Include(t => t.Trainings.Where(t => t.EndedAt == DateTime.MinValue))
+                                        .ThenInclude(m => m.Trainer);
+
+        foreach (var team in teams) team.DisplayTrainer();
     }
 
     private static async Task DisplayPlayers()
@@ -87,8 +114,8 @@ internal class Program
 
         await _db.Matches.AddAsync(new Match()
         {
-            Team1 = team1!,
-            Team2 = team2!,
+            HomeTeam = team1!,
+            AwayTeam = team2!,
             Score = "10-2"
         });
 
@@ -101,7 +128,7 @@ internal class Program
         match!.PlayedAt = DateTime.UtcNow;
         Team? team2 = await _db.Teams.AsQueryable().FirstOrDefaultAsync(t => t.Id == 8);
         team2!.Name = "Inter";
-        match.Team2 = team2;
+        match.AwayTeam = team2;
 
         await _db.SaveChangesAsync();
     }
