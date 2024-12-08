@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using ConsoleApp.BOs;
+using Data;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +15,9 @@ internal class Program
         //await AddTeams();
         //await AddTrainings();
         //DisplayTeams();
-        DisplayTeamsWithCurrentTrainer();
+        //DisplayTeamsWithCurrentTrainer();
         //await DisplayPlayers();
+        await DisplayPlayersWithTrainer();
         //await AddMatch();
         //await UpdateMatch(); 
         //await AddEnrollment();
@@ -90,6 +92,23 @@ internal class Program
         IQueryable<Player> players = _db.Players.AsQueryable()
                                         .Include(p => p.Enrollments).ThenInclude(e => e.Team)
                                         .Where(p => p.Name == "Ronaldo");
+
+        foreach (var player in players) player.Display();
+    }
+
+    private static async Task DisplayPlayersWithTrainer()
+    {
+        List<PlayerTeamTrainer> players = _db.Players.AsQueryable()
+                                        .Include(p => p.Enrollments.Where(e => e.EndedAt == DateTime.MinValue))
+                                        .ThenInclude(e => e.Team)
+                                        .ThenInclude(t => t.Trainings.Where(e => e.EndedAt == DateTime.MinValue))
+                                        .ThenInclude(t => t.Trainer)
+                                        .Select(x => new PlayerTeamTrainer () { 
+                                            Name = x.Name, 
+                                            Team = x.Enrollments.FirstOrDefault().Team.Name,
+                                            Trainer = x.Enrollments.FirstOrDefault().Team.Trainings.FirstOrDefault().Trainer.Name,
+                                        })
+                                        .ToList();
 
         foreach (var player in players) player.Display();
     }
